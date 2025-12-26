@@ -3,7 +3,7 @@
 // src/Controller/Admin/OrderCrudController.php
 // ============================================
 
-namespace App\Controller\admin;
+namespace App\Controller\Admin;
 
 use App\Entity\Order;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;

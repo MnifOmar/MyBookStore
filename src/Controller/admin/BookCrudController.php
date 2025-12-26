@@ -3,7 +3,7 @@
 // src/Controller/Admin/BookCrudController.php
 // ============================================
 
-namespace App\Controller\admin;
+namespace App\Controller\Admin;
 
 use App\Entity\Book;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;

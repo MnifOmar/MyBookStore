@@ -3,7 +3,7 @@
 // src/Controller/Admin/AuthorCrudController.php
 // ============================================
 
-namespace App\Controller\admin;
+namespace App\Controller\Admin;
 
 use App\Entity\Author;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;

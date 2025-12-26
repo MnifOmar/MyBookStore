@@ -1,7 +1,7 @@
 <?php
 // src/Controller/Admin/DashboardController.php
 
-namespace App\Controller\admin;
+namespace App\Controller\Admin;
 
 use App\Entity\Author;
 use App\Entity\Book;
@@ -20,7 +20,7 @@ class DashboardController extends AbstractDashboardController
     #[Route('/admin', name: 'admin')]
     public function index(): Response
     {
-        return $this->render('admin/dashboard.html.twig');
+         return $this->render('admin/dashboard.html.twig');
     }
 
     public function configureDashboard(): Dashboard
