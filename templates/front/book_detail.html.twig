@@ -1,0 +1,85 @@
+{# ================================================ #}
+{# templates/front/book_detail.html.twig #}
+{# ================================================ #}
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ book.title }}{% endblock %}
+
+{% block body %}
+    <div class="container my-5">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ path('app_home') }}">Accueil</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('app_books') }}">Livres</a></li>
+                <li class="breadcrumb-item active">{{ book.title }}</li>
+            </ol>
+        </nav>
+
+        <div class="row">
+            <div class="col-md-4">
+                {% if book.coverImage %}
+                    <img src="{{ asset('uploads/books/' ~ book.coverImage) }}" class="img-fluid rounded" alt="{{ book.title }}">
+                {% else %}
+                    <div class="bg-secondary text-white d-flex align-items-center justify-content-center rounded" style="height: 400px;">
+                        <i class="bi bi-book" style="font-size: 8rem;"></i>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="col-md-8">
+                <h1>{{ book.title }}</h1>
+                <p class="lead text-muted">
+                    Par {% for author in book.authors %}
+                        <strong>{{ author.fullName }}</strong>{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </p>
+
+                <hr>
+
+                <div class="mb-3">
+                    <span class="badge bg-primary">{{ book.category.name }}</span>
+                    <span class="badge bg-secondary">{{ book.editor.name }}</span>
+                </div>
+
+                <table class="table table-sm">
+                    <tr>
+                        <th width="150">ISBN:</th>
+                        <td>{{ book.isbn }}</td>
+                    </tr>
+                    <tr>
+                        <th>Année:</th>
+                        <td>{{ book.publicationYear }}</td>
+                    </tr>
+                    <tr>
+                        <th>Prix:</th>
+                        <td><h4 class="text-success">{{ book.price }} €</h4></td>
+                    </tr>
+                    <tr>
+                        <th>Disponibilité:</th>
+                        <td>
+                            {% if book.stock > 0 %}
+                                <span class="badge bg-success">En stock ({{ book.stock }})</span>
+                            {% else %}
+                                <span class="badge bg-danger">Rupture de stock</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+
+                {% if book.description %}
+                    <h5>Description</h5>
+                    <p>{{ book.description }}</p>
+                {% endif %}
+
+                {% if app.user and book.stock > 0 %}
+                    <a href="{{ path('app_cart_add', {id: book.id}) }}" class="btn btn-success btn-lg">
+                        <i class="bi bi-cart-plus"></i> Ajouter au panier
+                    </a>
+                {% elseif not app.user %}
+                    <a href="{{ path('app_login') }}" class="btn btn-primary btn-lg">
+                        <i class="bi bi-box-arrow-in-right"></i> Connectez-vous pour commander
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

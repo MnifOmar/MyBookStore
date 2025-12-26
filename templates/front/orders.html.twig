@@ -1,0 +1,59 @@
+{# ================================================ #}
+{# templates/front/orders.html.twig #}
+{# ================================================ #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes commandes{% endblock %}
+
+{% block body %}
+    <div class="container my-5">
+        <h1 class="mb-4"><i class="bi bi-bag"></i> Mes commandes</h1>
+
+        <div class="row">
+            <div class="col-md-3">
+                <div class="list-group">
+                    <a href="{{ path('app_profile') }}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-person"></i> Informations
+                    </a>
+                    <a href="{{ path('app_profile_orders') }}" class="list-group-item list-group-item-action active">
+                        <i class="bi bi-bag"></i> Mes commandes
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-9">
+                {% if orders is empty %}
+                    <div class="alert alert-info">Vous n'avez pas encore passé de commande.</div>
+                {% else %}
+                    {% for order in orders %}
+                        <div class="card mb-3">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <strong>Commande #{{ order.orderNumber }}</strong>
+                                <span class="badge
+                            {% if order.status == 'pending' %}bg-warning
+                            {% elseif order.status == 'delivered' %}bg-success
+                            {% else %}bg-primary{% endif %}">
+                            {{ order.status }}
+                        </span>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Date:</strong> {{ order.createdAt|date('d/m/Y H:i') }}</p>
+                                <p><strong>Total:</strong> {{ order.totalAmount }} €</p>
+
+                                <h6>Articles commandés:</h6>
+                                <ul class="list-group list-group-flush">
+                                    {% for item in order.orderItems %}
+                                        <li class="list-group-item">
+                                            {{ item.book.title }} -
+                                            {{ item.quantity }} x {{ item.unitPrice }} € =
+                                            <strong>{{ item.subtotal|number_format(2) }} €</strong>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,54 @@
+
+{# ================================================ #}
+{# templates/front/profile.html.twig #}
+{# ================================================ #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon profil{% endblock %}
+
+{% block body %}
+    <div class="container my-5">
+        <h1 class="mb-4"><i class="bi bi-person-circle"></i> Mon profil</h1>
+
+        <div class="row">
+            <div class="col-md-3">
+                <div class="list-group">
+                    <a href="{{ path('app_profile') }}" class="list-group-item list-group-item-action active">
+                        <i class="bi bi-person"></i> Informations
+                    </a>
+                    <a href="{{ path('app_profile_orders') }}" class="list-group-item list-group-item-action">
+                        <i class="bi bi-bag"></i> Mes commandes
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-9">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Modifier mes informations</h5>
+                    </div>
+                    <div class="card-body">
+                        {{ form_start(form) }}
+                        <div class="row">
+                            <div class="col-md-6">
+                                {{ form_row(form.firstName) }}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form_row(form.lastName) }}
+                            </div>
+                        </div>
+                        {{ form_row(form.email) }}
+                        {{ form_row(form.address) }}
+                        {{ form_row(form.phone) }}
+                        <hr>
+                        <h6>Changer le mot de passe</h6>
+                        {{ form_row(form.plainPassword) }}
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Enregistrer
+                        </button>
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

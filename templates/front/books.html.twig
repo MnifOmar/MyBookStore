@@ -1,0 +1,95 @@
+{# templates/front/books.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Nos livres{% endblock %}
+
+{% block body %}
+    <div class="container my-5">
+        <h1 class="mb-4">Catalogue de livres</h1>
+
+        {# Formulaire de recherche #}
+        <div class="card mb-4">
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-3">
+                        <input type="text" name="search" class="form-control" placeholder="Rechercher..." value="{{ current_search }}">
+                    </div>
+                    <div class="col-md-3">
+                        <select name="category" class="form-control">
+                            <option value="">Toutes les catégories</option>
+                            {% for cat in categories %}
+                                <option value="{{ cat.id }}" {% if current_category == cat.id %}selected{% endif %}>
+                                    {{ cat.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="editor" class="form-control">
+                            <option value="">Tous les éditeurs</option>
+                            {% for ed in editors %}
+                                <option value="{{ ed.id }}" {% if current_editor == ed.id %}selected{% endif %}>
+                                    {{ ed.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="author" class="form-control">
+                            <option value="">Tous les auteurs</option>
+                            {% for author in authors %}
+                                <option value="{{ author.id }}" {% if current_author == author.id %}selected{% endif %}>
+                                    {{ author.fullName }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Rechercher</button>
+                        <a href="{{ path('app_books') }}" class="btn btn-secondary">Réinitialiser</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {# Liste des livres #}
+        <div class="row">
+            {% for book in pagination %}
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100">
+                        {% if book.coverImage %}
+                            <img src="{{ asset('uploads/books/' ~ book.coverImage) }}" class="card-img-top" alt="{{ book.title }}" style="height: 300px; object-fit: cover;">
+                        {% else %}
+                            <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 300px;">
+                                <i class="bi bi-book" style="font-size: 5rem;"></i>
+                            </div>
+                        {% endif %}
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">{{ book.title }}</h5>
+                            <p class="card-text text-muted small">
+                                {% for author in book.authors %}
+                                    {{ author.fullName }}{% if not loop.last %}, {% endif %}
+                                {% endfor %}
+                            </p>
+                            <p class="card-text"><span class="badge bg-info">{{ book.category.name }}</span></p>
+                            <p class="card-text"><strong>{{ book.price }} €</strong></p>
+                            <p class="card-text"><small class="text-muted">Stock: {{ book.stock }}</small></p>
+                            <div class="mt-auto">
+                                <a href="{{ path('app_book_show', {id: book.id}) }}" class="btn btn-sm btn-primary w-100">Voir détails</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-12">
+                    <div class="alert alert-info">Aucun livre trouvé.</div>
+                </div>
+            {% endfor %}
+        </div>
+
+        {# Pagination #}
+        <div class="navigation">
+            {{ knp_pagination_render(pagination) }}
+        </div>
+    </div>
+{% endblock %}
