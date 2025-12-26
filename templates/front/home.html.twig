@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil - MyBookstore{% endblock %}
+
+{% block body %}
+    <div class="bg-light py-5">
+        <div class="container">
+            <div class="text-center">
+                <h1 class="display-4">Bienvenue sur MyBookstore</h1>
+                <p class="lead">Découvrez notre sélection de livres</p>
+                <a href="{{ path('app_books') }}" class="btn btn-primary btn-lg">Explorer nos livres</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container my-5">
+        <h2 class="mb-4">Dernières nouveautés</h2>
+        <div class="row">
+            {% for book in latest_books %}
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100">
+                        {% if book.coverImage %}
+                            <img src="{{ asset('uploads/books/' ~ book.coverImage) }}" class="card-img-top" alt="{{ book.title }}">
+                        {% else %}
+                            <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <i class="bi bi-book" style="font-size: 4rem;"></i>
+                            </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ book.title }}</h5>
+                            <p class="card-text text-muted">{{ book.authors|join(', ') }}</p>
+                            <p class="card-text"><strong>{{ book.price }} €</strong></p>
+                            <a href="{{ path('app_book_show', {id: book.id}) }}" class="btn btn-sm btn-primary">Voir détails</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="bg-light py-5">
+        <div class="container">
+            <h2 class="mb-4">Nos catégories</h2>
+            <div class="row">
+                {% for category in categories %}
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title"><i class="bi bi-bookmark"></i> {{ category.name }}</h5>
+                                <p class="card-text">{{ category.description }}</p>
+                                <a href="{{ path('app_books', {category: category.id}) }}" class="btn btn-sm btn-outline-primary">Voir les livres</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
