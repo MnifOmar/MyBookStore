@@ -37,7 +37,12 @@ class Order
     #[ORM\Column]
     private ?DateTimeImmutable $createdAt;
 
-    #[ORM\OneToMany(targetEntity: OrderItem::class, mappedBy: 'orderRef', cascade: ['persist', 'remove'])]
+    #[ORM\OneToMany(
+        targetEntity: OrderItem::class,
+        mappedBy: 'orderRef',
+        cascade: ['persist', 'remove'],
+        orphanRemoval: true
+    )]
     private Collection $orderItems;
 
     public function __construct()
@@ -129,5 +134,9 @@ class Order
             }
         }
         return $this;
+    }
+    public function __toString(): string
+    {
+        return $this->orderNumber ?? 'Commande #' . $this->id;
     }
 }

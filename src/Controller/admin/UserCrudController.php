@@ -12,6 +12,9 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\EmailField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use Doctrine\ORM\EntityManagerInterface;
 
 class UserCrudController extends AbstractCrudController
 {
@@ -44,5 +47,30 @@ class UserCrudController extends AbstractCrudController
                 ->allowMultipleChoices()
                 ->renderExpanded(),
         ];
+    }
+    public function configureActions(Actions $actions): Actions
+    {
+        return $actions
+            ->add(Crud::PAGE_INDEX, Action::DETAIL)
+            ->setPermission(Action::DELETE, 'ROLE_ADMIN')
+            ->setPermission(Action::EDIT, 'ROLE_ADMIN');
+    }
+    public function deleteEntity(EntityManagerInterface $em, $entityInstance): void
+    {
+        if ($entityInstance instanceof User) {
+            // Vérifier si l'utilisateur a des commandes
+            if ($entityInstance->getOrders()->count() > 0) {
+                $this->addFlash('error', 'Impossible de supprimer cet utilisateur car il a des commandes associées.');
+                return;
+            }
+
+            // Empêcher la suppression de son propre compte
+            if ($entityInstance->getId() === $this->getUser()->getId()) {
+                $this->addFlash('error', 'Vous ne pouvez pas supprimer votre propre compte.');
+                return;
+            }
+        }
+
+        parent::deleteEntity($em, $entityInstance);
     }
 }

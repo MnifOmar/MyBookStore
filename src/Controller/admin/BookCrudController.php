@@ -14,6 +14,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\MoneyField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
+use Doctrine\ORM\EntityManagerInterface;
 
 class BookCrudController extends AbstractCrudController
 {
@@ -40,6 +41,17 @@ class BookCrudController extends AbstractCrudController
                 ->setUploadDir('public/uploads/books')
                 ->setUploadedFileNamePattern('[randomhash].[extension]'),
         ];
+    }
+    public function deleteEntity(EntityManagerInterface $em, $entityInstance): void
+    {
+        if ($entityInstance instanceof Book) {
+            if ($entityInstance->getOrderItems()->count() > 0) {
+                $this->addFlash('error', 'Impossible de supprimer ce livre car il fait partie de commandes existantes. ');
+                return;
+            }
+        }
+
+        parent::deleteEntity($em, $entityInstance);
     }
 }
 

@@ -1,5 +1,4 @@
 <?php
-// src/Controller/Admin/DashboardController.php
 
 namespace App\Controller\Admin;
 
@@ -9,6 +8,9 @@ use App\Entity\Category;
 use App\Entity\Editor;
 use App\Entity\Order;
 use App\Entity\User;
+use App\Repository\BookRepository;
+use App\Repository\OrderRepository;
+use App\Repository\UserRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
@@ -17,10 +19,48 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class DashboardController extends AbstractDashboardController
 {
+    private BookRepository $bookRepository;
+    private OrderRepository $orderRepository;
+    private UserRepository $userRepository;
+
+    public function __construct(
+        BookRepository  $bookRepository,
+        OrderRepository $orderRepository,
+        UserRepository  $userRepository
+    )
+    {
+        $this->bookRepository = $bookRepository;
+        $this->orderRepository = $orderRepository;
+        $this->userRepository = $userRepository;
+    }
+
     #[Route('/admin', name: 'admin')]
     public function index(): Response
     {
-         return $this->render('admin/dashboard.html.twig');
+        $orders = $this->orderRepository->findAll();
+
+        $statusCounts = [
+            'pending' => 0,
+            'processing' => 0,
+            'shipped' => 0,
+            'delivered' => 0,
+            'cancelled' => 0,
+        ];
+
+        $totalRevenue = 0;
+        foreach ($orders as $order) {
+            $statusCounts[$order->getStatus()]++;
+            $totalRevenue += (float)$order->getTotalAmount();
+        }
+
+        return $this->render('admin/dashboard.html.twig', [
+            'total_books' => count($this->bookRepository->findAll()),
+            'total_orders' => count($orders),
+            'total_users' => count($this->userRepository->findAll()),
+            'total_revenue' => $totalRevenue,
+            'latest_orders' => $this->orderRepository->findBy([], ['createdAt' => 'DESC'], 5),
+            'status_counts' => $statusCounts,
+        ]);
     }
 
     public function configureDashboard(): Dashboard

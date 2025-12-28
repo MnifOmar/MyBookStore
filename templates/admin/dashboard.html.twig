@@ -1,12 +1,233 @@
+{# templates/admin/dashboard.html.twig #}
 {% extends '@EasyAdmin/page/content.html.twig' %}
 
-{% block content_title %}Welcome to MyBookstore Admin{% endblock %}
+{% block content_title %}
+    <i class="fa fa-dashboard"></i> Tableau de bord MyBookstore
+{% endblock %}
 
 {% block main %}
-    <div class="row">
-        <div class="col-md-12">
-            <h2>Dashboard Statistics</h2>
-            {# Add your custom dashboard content here #}
+    <div class="row mb-4">
+        {# Card 1 - Total Livres #}
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Livres
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ total_books }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fa fa-book fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Card 2 - Total Commandes #}
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Commandes
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ total_orders }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fa fa-shopping-cart fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Card 3 - Total Utilisateurs #}
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Utilisateurs
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ total_users }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fa fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Card 4 - Revenus #}
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Revenus Total
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ total_revenue|number_format(2) }} €
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fa fa-euro fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
+    <div class="row">
+        {# Dernières commandes #}
+        <div class="col-xl-8 col-lg-7">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fa fa-shopping-cart"></i> Dernières commandes
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% if latest_orders is empty %}
+                        <p class="text-muted">Aucune commande pour le moment.</p>
+                    {% else %}
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover">
+                                <thead class="table-light">
+                                <tr>
+                                    <th>N° Commande</th>
+                                    <th>Client</th>
+                                    <th>Montant</th>
+                                    <th>Statut</th>
+                                    <th>Date</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for order in latest_orders %}
+                                    <tr>
+                                        <td><strong>{{ order.orderNumber }}</strong></td>
+                                        <td>{{ order.user.fullName }}</td>
+                                        <td>{{ order.totalAmount }} €</td>
+                                        <td>
+                                            <span class="badge
+                                                {% if order.status == 'pending' %}bg-warning
+                                                {% elseif order.status == 'delivered' %}bg-success
+                                                {% elseif order.status == 'cancelled' %}bg-danger
+                                                {% else %}bg-primary{% endif %}">
+                                                {{ order.status }}
+                                            </span>
+                                        </td>
+                                        <td>{{ order.createdAt|date('d/m/Y H:i') }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {# Statistiques rapides #}
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="fa fa-chart-pie"></i> Répartition des commandes
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-warning">⏳ En attente</span>
+                            <strong>{{ status_counts.pending ?? 0 }}</strong>
+                        </div>
+                        <div class="progress mb-3" style="height: 20px;">
+                            <div class="progress-bar bg-warning" style="width: {{ status_counts.pending ?? 0 > 0 ? (status_counts.pending / total_orders * 100) : 0 }}%">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-primary">🔄 En traitement</span>
+                            <strong>{{ status_counts.processing ?? 0 }}</strong>
+                        </div>
+                        <div class="progress mb-3" style="height: 20px;">
+                            <div class="progress-bar bg-primary" style="width: {{ status_counts.processing ?? 0 > 0 ? (status_counts.processing / total_orders * 100) : 0 }}%">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-info">📦 Expédiées</span>
+                            <strong>{{ status_counts.shipped ?? 0 }}</strong>
+                        </div>
+                        <div class="progress mb-3" style="height: 20px;">
+                            <div class="progress-bar bg-info" style="width: {{ status_counts.shipped ?? 0 > 0 ? (status_counts.shipped / total_orders * 100) : 0 }}%">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-success">✅ Livrées</span>
+                            <strong>{{ status_counts.delivered ?? 0 }}</strong>
+                        </div>
+                        <div class="progress mb-3" style="height: 20px;">
+                            <div class="progress-bar bg-success" style="width: {{ status_counts.delivered ?? 0 > 0 ? (status_counts.delivered / total_orders * 100) : 0 }}%">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-danger">❌ Annulées</span>
+                            <strong>{{ status_counts.cancelled ?? 0 }}</strong>
+                        </div>
+                        <div class="progress" style="height: 20px;">
+                            <div class="progress-bar bg-danger" style="width: {{ status_counts.cancelled ?? 0 > 0 ? (status_counts.cancelled / total_orders * 100) : 0 }}%">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .border-left-primary {
+            border-left: 4px solid #4e73df !important;
+        }
+        .border-left-success {
+            border-left: 4px solid #1cc88a !important;
+        }
+        .border-left-info {
+            border-left: 4px solid #36b9cc !important;
+        }
+        .border-left-warning {
+            border-left: 4px solid #f6c23e !important;
+        }
+        .card {
+            border-radius: 0.35rem;
+        }
+        .shadow {
+            box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15) !important;
+        }
+    </style>
 {% endblock %}

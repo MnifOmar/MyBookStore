@@ -10,6 +10,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
+use Doctrine\ORM\EntityManagerInterface;
 
 class CategoryCrudController extends AbstractCrudController
 {
@@ -26,4 +27,16 @@ class CategoryCrudController extends AbstractCrudController
             TextareaField::new('description', 'Description')->hideOnIndex(),
         ];
     }
+    public function deleteEntity(EntityManagerInterface $em, $entityInstance): void
+    {
+        if ($entityInstance instanceof Category) {
+            if ($entityInstance->getBooks()->count() > 0) {
+                $this->addFlash('error', 'Impossible de supprimer cette catégorie car elle contient des livres.');
+                return;
+            }
+        }
+
+        parent::deleteEntity($em, $entityInstance);
+    }
+
 }
